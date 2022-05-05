@@ -3,34 +3,44 @@ package pro.sky.demoexceptions.service;
 import org.springframework.stereotype.Service;
 import pro.sky.demoexceptions.Employee;
 import pro.sky.demoexceptions.exceptions.EmployeeNotFoundException;
-import pro.sky.demoexceptions.exceptions.OverFlowEmployeeBook;
+import pro.sky.demoexceptions.exceptions.OverFlowEmployeeBookException;
 import pro.sky.demoexceptions.exceptions.UniqueEmployeeException;
 
 @Service
 public class EmployeeService {
-    Employee[] employeeBook = new Employee[2];
+    private final Employee[] employeeBook = new Employee[2];
 
     public Employee addEmployee(String firstName, String lastName) {
         Employee emp = new Employee(firstName, lastName);
+        boolean uniqueFLg = false;
+        boolean addFlg = false;
 
-        for (Employee employee : employeeBook) {
-            if (employee != null && employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
-                throw new UniqueEmployeeException("В массиве есть сотрудник, когда сотрудника пытаются добавить в массив");
-            }
-        }
         for (int i = 0; i < employeeBook.length; i++) {
+            if (employeeBook[i] != null && employeeBook[i].equals(emp)) {
+                uniqueFLg = true;
+                break;
+            }
             if (employeeBook[i] == null) {
                 employeeBook[i] = emp;
-                return employeeBook[i];
+                addFlg = true;
+                break;
             }
         }
-        throw new OverFlowEmployeeBook("Массив переполнен");
+
+        if (uniqueFLg) {
+            throw new UniqueEmployeeException("В массиве есть сотрудник, когда сотрудника пытаются добавить в массив");
+        } else if (!addFlg) {
+            throw new OverFlowEmployeeBookException("Массив переполнен");
+        } else {
+            return emp;
+        }
     }
 
     public Employee removeEmployee(String firstName, String lastName) {
+        Employee emp = new Employee(firstName, lastName);
+
         for (int i = 0; i < employeeBook.length; i++) {
-            if (employeeBook[i] != null && employeeBook[i].getFirstName().equals(firstName) && employeeBook[i].getLastName().equals(lastName)) {
-                Employee emp = employeeBook[i];
+            if (employeeBook[i] != null && employeeBook[i].equals(emp)) {
                 employeeBook[i] = null;
                 return emp;
             }
@@ -39,8 +49,10 @@ public class EmployeeService {
     }
 
     public Employee findEmployee(String firstName, String lastName) {
+        Employee emp = new Employee(firstName, lastName);
+
         for (Employee employee : employeeBook) {
-            if (employee != null && employee.getFirstName().equals(firstName) && employee.getLastName().equals(lastName)) {
+            if (employee != null && employee.equals(emp)) {
                 return employee;
             }
         }
