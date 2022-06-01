@@ -6,56 +6,53 @@ import pro.sky.demoexceptions.exceptions.EmployeeNotFoundException;
 import pro.sky.demoexceptions.exceptions.OverFlowEmployeeBookException;
 import pro.sky.demoexceptions.exceptions.UniqueEmployeeException;
 
+import java.util.*;
+
 @Service
 public class EmployeeService {
-    private final Employee[] employeeBook = new Employee[2];
+    private Map<Integer, Employee> employeeBook;
+    private final int maxSizeList = 2;
+    private int i = 0;
+
+    public EmployeeService() {
+        this.employeeBook = new HashMap<>();
+    }
 
     public Employee addEmployee(String firstName, String lastName) {
         Employee emp = new Employee(firstName, lastName);
-        boolean uniqueFLg = false;
-        boolean addFlg = false;
 
-        for (int i = 0; i < employeeBook.length; i++) {
-            if (employeeBook[i] != null && employeeBook[i].equals(emp)) {
-                uniqueFLg = true;
-                break;
-            }
-            if (employeeBook[i] == null) {
-                employeeBook[i] = emp;
-                addFlg = true;
-                break;
-            }
-        }
-
-        if (uniqueFLg) {
+        if (employeeBook.containsValue(emp)) {
             throw new UniqueEmployeeException("В массиве есть сотрудник, когда сотрудника пытаются добавить в массив");
-        } else if (!addFlg) {
-            throw new OverFlowEmployeeBookException("Массив переполнен");
+        } else if (employeeBook.size() < maxSizeList) {
+            employeeBook.put(i++, emp);
         } else {
-            return emp;
+            throw new OverFlowEmployeeBookException("Список переполнен");
         }
+        return emp;
     }
 
     public Employee removeEmployee(String firstName, String lastName) {
         Employee emp = new Employee(firstName, lastName);
-
-        for (int i = 0; i < employeeBook.length; i++) {
-            if (employeeBook[i] != null && employeeBook[i].equals(emp)) {
-                employeeBook[i] = null;
-                return emp;
-            }
+        if (employeeBook.containsValue(emp)) {
+            employeeBook.values().remove(emp);
+            //map.values().remove(valueToRemove);
+            return emp;
+        } else {
+            throw new EmployeeNotFoundException("Сотрудник не найден");
         }
-        throw new EmployeeNotFoundException("Сотрудник не найден");
     }
 
     public Employee findEmployee(String firstName, String lastName) {
         Employee emp = new Employee(firstName, lastName);
 
-        for (Employee employee : employeeBook) {
-            if (employee != null && employee.equals(emp)) {
-                return employee;
-            }
+        if (employeeBook.containsValue(emp)) {
+            return emp;
+        } else {
+            throw new EmployeeNotFoundException("Сотрудник не найден");
         }
-        throw new EmployeeNotFoundException("Сотрудник не найден");
+    }
+
+    public Map<Integer, Employee> getEmployeeBook() {
+        return Collections.unmodifiableMap(employeeBook);
     }
 }
