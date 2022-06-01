@@ -8,6 +8,7 @@ import pro.sky.demoexceptions.Employee;
 import pro.sky.demoexceptions.service.EmployeeService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/employee")
@@ -34,7 +35,7 @@ public class EmployeeController {
     }
 
     @GetMapping(path = "/getlist")
-    public List<Employee> getEmployeeBook() {
+    public Map<Integer, Employee> getEmployeeBook() {
         return employeeService.getEmployeeBook();
     }
 }
