@@ -11,15 +11,15 @@ import java.util.*;
 @Service
 public class EmployeeService {
     private Map<Integer, Employee> employeeBook;
-    private final int maxSizeList = 2;
+    private final int maxSizeList = 5;
     private int i = 0;
 
     public EmployeeService() {
         this.employeeBook = new HashMap<>();
     }
 
-    public Employee addEmployee(String firstName, String lastName) {
-        Employee emp = new Employee(firstName, lastName);
+    public Employee addEmployee(String firstName, String lastName, int salary, int departmentId) {
+        Employee emp = new Employee(firstName, lastName, salary, departmentId);
 
         if (employeeBook.containsValue(emp)) {
             throw new UniqueEmployeeException("В массиве есть сотрудник, когда сотрудника пытаются добавить в массив");
@@ -35,7 +35,6 @@ public class EmployeeService {
         Employee emp = new Employee(firstName, lastName);
         if (employeeBook.containsValue(emp)) {
             employeeBook.values().remove(emp);
-            //map.values().remove(valueToRemove);
             return emp;
         } else {
             throw new EmployeeNotFoundException("Сотрудник не найден");
