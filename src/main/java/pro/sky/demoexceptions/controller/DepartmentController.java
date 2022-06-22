@@ -32,12 +32,11 @@ public class DepartmentController {
     }
 
     @GetMapping(path = "/all")
-    public List<Employee> getAllEmployee() {
-        return departmentService.getAllEmployee();
-    }
-
-    @GetMapping(path = "/allByDepartment")
-    public List<Employee> getAllEmployeeByDepartment(@RequestParam() int departmentId) {
-        return departmentService.getAllEmployeeByDepartment(departmentId);
+    public List<Employee> getAllEmployeeByDepartment(@RequestParam(required = false) String departmentId) {
+        if(departmentId==null){
+            return departmentService.getAllEmployee();
+        } else {
+            return departmentService.getAllEmployeeByDepartment(Integer.parseInt(departmentId));
+        }
     }
 }
