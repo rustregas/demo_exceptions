@@ -1,7 +1,9 @@
 package pro.sky.demoexceptions.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pro.sky.demoexceptions.Employee;
+import pro.sky.demoexceptions.exceptions.BadInputStringException;
 import pro.sky.demoexceptions.exceptions.EmployeeNotFoundException;
 import pro.sky.demoexceptions.exceptions.OverFlowEmployeeBookException;
 import pro.sky.demoexceptions.exceptions.UniqueEmployeeException;
@@ -19,16 +21,22 @@ public class EmployeeService {
     }
 
     public Employee addEmployee(String firstName, String lastName, int salary, int departmentId) {
-        Employee emp = new Employee(firstName, lastName, salary, departmentId);
+        if(StringUtils.isNotBlank(firstName)&&StringUtils.isAlpha(firstName)&&StringUtils.isNotBlank(lastName)&&StringUtils.isAlpha(lastName)) {
+            firstName = initcap(firstName);
+            lastName = initcap(lastName);
+            Employee emp = new Employee(firstName, lastName, salary, departmentId);
 
-        if (employeeBook.containsValue(emp)) {
-            throw new UniqueEmployeeException("В массиве есть сотрудник, когда сотрудника пытаются добавить в массив");
-        } else if (employeeBook.size() < maxSizeList) {
-            employeeBook.put(i++, emp);
+            if (employeeBook.containsValue(emp)) {
+                throw new UniqueEmployeeException("В массиве есть сотрудник, когда сотрудника пытаются добавить в массив");
+            } else if (employeeBook.size() < maxSizeList) {
+                employeeBook.put(i++, emp);
+            } else {
+                throw new OverFlowEmployeeBookException("Список переполнен");
+            }
+            return emp;
         } else {
-            throw new OverFlowEmployeeBookException("Список переполнен");
+            throw new BadInputStringException("Какие-то странные символы");
         }
-        return emp;
     }
 
     public Employee removeEmployee(String firstName, String lastName) {
@@ -53,5 +61,10 @@ public class EmployeeService {
 
     public Map<Integer, Employee> getEmployeeBook() {
         return Collections.unmodifiableMap(employeeBook);
+    }
+
+    public static String initcap(String s){
+        String newS = StringUtils.substring(s, 0,1).toUpperCase() + StringUtils.substring(s, 1).toLowerCase();
+        return newS;
     }
 }
